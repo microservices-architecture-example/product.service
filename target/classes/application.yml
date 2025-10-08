@@ -1,0 +1,23 @@
+
+
+server:
+  port: 8080
+
+spring:
+  application:
+    name: product
+
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USER:store}
+    password: ${DATABASE_PASSWORD:I5pEr@5ecReT}
+    driver-class-name: org.postgresql.Driver
+
+  flyway:
+    baseline-on-migrate: true
+    schemas: product
+
+  jpa:
+    properties:
+      hibernate:
+        default_schema: product
