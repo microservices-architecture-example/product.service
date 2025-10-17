@@ -20,17 +20,17 @@ import lombok.experimental.Accessors;
 public class ProductModel {
 
     @Id
-    @Column(name = "id_product")
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column(name = "tx_name")
+    @Column(name = "name")
     private String name;
 
-    @Column(name = "fl_price")
-    private Double price;
+    @Column(name = "price")
+    private Float price;
 
-    @Column(name = "tx_unit")
+    @Column(name = "unit")
     private String unit;
 
 

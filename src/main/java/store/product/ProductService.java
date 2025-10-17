@@ -1,9 +1,6 @@
 package store.product;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
+
 import java.util.List;
 import java.util.stream.StreamSupport;
 
@@ -39,10 +36,12 @@ public class ProductService {
             );
         }
 
-        if (productRepository.findByName(product.name()) != null)
+        // if not Optional.empty
+        if (productRepository.findByName(product.name()).isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                 "Name already have been registered!"
             );
+        }
 
         return productRepository.save(
             new ProductModel(product)
@@ -68,6 +67,8 @@ public class ProductService {
     }
 
     public void delete(String id) {
-        productRepository.delete(new ProductModel().id(id));
+        productRepository.delete(productRepository.findById(id).orElseThrow(() ->
+            new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found!")
+        ));
     }
 }

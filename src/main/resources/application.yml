@@ -21,3 +21,10 @@ spring:
     properties:
       hibernate:
         default_schema: product
+
+logging:
+  level:
+    org:
+      springframework:
+        web: debug
+    store: ${LOGGING_LEVEL_STORE:debug}
