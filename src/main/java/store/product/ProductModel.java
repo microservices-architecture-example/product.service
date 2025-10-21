@@ -28,7 +28,7 @@ public class ProductModel {
     private String name;
 
     @Column(name = "price")
-    private Float price;
+    private Double price;
 
     @Column(name = "unit")
     private String unit;

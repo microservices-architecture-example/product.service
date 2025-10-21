@@ -13,6 +13,6 @@ public class Product {
 
     private String id;
     private String name;
-    private Float price;
+    private Double price;
     private String unit;
 }
