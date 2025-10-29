@@ -86,6 +86,18 @@
 					</excludes>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.flywaydb</groupId>
+				<artifactId>flyway-maven-plugin</artifactId>
+				<configuration>
+					<url>jdbc:postgresql://db:5432/store</url>
+					<user>store</user>
+					<password>I5pEr@5ecReT</password>
+					<schemas>
+						<schema>product</schema>
+					</schemas>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 

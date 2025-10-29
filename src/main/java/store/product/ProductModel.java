@@ -1,6 +1,5 @@
 package store.product;
 
-import java.util.Date;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
