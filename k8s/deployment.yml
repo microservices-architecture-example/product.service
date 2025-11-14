@@ -13,11 +13,29 @@ spec:
         app: product
     spec:
       containers:
-        - name: db
+        - name: product
           image: luigilopesz/product:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-configmap
+                  key: POSTGRES_DB
+            - name: DATABASE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: POSTGRES_USER
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: POSTGRES_PASSWORD
+            - name: DATABASE_URL
+              value: "jdbc:postgresql://postgres:5432/$(POSTGRES_DB)"
           resources:
             requests:
               memory: "200Mi"
