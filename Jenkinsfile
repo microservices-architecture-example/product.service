@@ -30,7 +30,7 @@ pipeline {
                     sh "docker buildx create --use --platform=linux/arm64,linux/amd64 --node multi-platform-builder-${env.SERVICE} --name multi-platform-builder-${env.SERVICE}"
 
                     // build + push tags :latest e :BUILD_ID
-                    sh "docker buildx build --platform=linux/arm64,linux/amd64 --push --tag ${env.NAME}:latest --tag ${env.NAME}:${env.BUILD_ID} -f DockerFile ."
+                    sh "docker buildx build --platform=linux/arm64,linux/amd64 --push --tag ${env.NAME}:latest --tag ${env.NAME}:${env.BUILD_ID} -f Dockerfile ."
 
                     // limpeza do builder
                     sh "docker buildx rm --force multi-platform-builder-${env.SERVICE}"
@@ -55,7 +55,7 @@ pipeline {
 
                     # aplica manifest inicial se ainda não existir
                     if ! kubectl get deploy ${SERVICE} >/dev/null 2>&1; then
-                    kubectl apply -f ./k8s/k8s.yaml
+                    kubectl apply -f ./k8s/
                     fi
 
                     # atualiza a imagem do Deployment
