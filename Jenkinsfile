@@ -27,7 +27,7 @@ pipeline {
                     sh "docker login -u $USERNAME -p $TOKEN"
 
                     // builder multi-arch efêmero
-                    sh "docker buildx create --use --platform=linux/arm64,linux/amd64 --node multi-platform-builder-${env.SERVICE} --name multi-platform-builder-${env.SERVICE}"
+                    sh "docker buildx create --use --platform=linux/arm64,linux/amd64 --driver-opt network=host --node multi-platform-builder-${env.SERVICE} --name multi-platform-builder-${env.SERVICE}"
 
                     // build + push tags :latest e :BUILD_ID
                     sh "docker buildx build --platform=linux/arm64,linux/amd64 --push --tag ${env.NAME}:latest --tag ${env.NAME}:${env.BUILD_ID} -f Dockerfile ."
@@ -38,6 +38,13 @@ pipeline {
             }
         }
         stage('Deploy to EKS') {
+            agent {
+                // Use a docker agent with AWS CLI. Kubectl will be installed in the steps.
+                docker {
+                    image 'amazon/aws-cli:latest'
+                    args '--entrypoint=""'
+                }
+            }
             steps {
                 // Usa credenciais AWS do Jenkins (Access Key / Secret)
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding',
@@ -45,6 +52,11 @@ pipeline {
                 accessKeyVariable: 'AWS_ACCESS_KEY_ID',
                 secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
                 sh """
+                    # Instala o kubectl, necessário para os comandos seguintes
+                    curl -LO "https://dl.k8s.io/release/\$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+                    chmod +x ./kubectl
+                    mv ./kubectl /usr/local/bin/
+
                     # garante diretório padrão do kubeconfig
                     mkdir -p ~/.kube
 
@@ -53,10 +65,9 @@ pipeline {
 
                     kubectl config current-context
 
-                    # aplica manifest inicial se ainda não existir
-                    if ! kubectl get deploy ${SERVICE} >/dev/null 2>&1; then
+                    # Aplica as configurações do k8s.
+                    # Isso vai criar o deployment se não existir, ou atualizá-lo se já existir.
                     kubectl apply -f ./k8s/
-                    fi
 
                     # atualiza a imagem do Deployment
                     kubectl set image deploy/${SERVICE} ${SERVICE}=${NAME}:${BUILD_ID} --record
